@@ -121,7 +121,9 @@ with col2:
 st.write("---")
 
 # Avisar a l'usuari si falta omplir dades obligatòries
+dades_incompletes = False
 if not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/a...":
+    dades_incompletes = True
     st.info("⚠️ Per començar, heu d'escriure l'**Indicatiu del Vehicle** i seleccionar el **Nom de l'Auditor/a** a dalt de tot.")
 
 # --- LLISTES INTERACTIVES ---
@@ -198,9 +200,7 @@ data_arxiu = datetime.date.today().strftime('%Y%m%d')
 col_btn1, col_btn2 = st.columns(2)
 
 with col_btn1:
-    boto_bloquejat = False
-    if not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/a...":
-        boto_bloquejat = True
-        
     st.download_button(
         label="💾 Descarregar Informe (TXT)",
+        data=informe_text,
+        file_name=f"Revisio_{nom_arxiu_net}_{data_arxiu}.txt",
