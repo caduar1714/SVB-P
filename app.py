@@ -11,19 +11,17 @@ st.set_page_config(
 st.title("🚑 Control de Material Multivehicle")
 st.write("Ompliu les dades del vehicle i el personal per començar la verificació.")
 
-# --- APARTAT DE CONTROL DE PERSONAL I VEHICLE (ACTUALITZAT) ---
+# --- APARTAT DE CONTROL DE PERSONAL I VEHICLE ---
 st.subheader("📋 Dades de la Revisió")
 
 c_veh, c_mat = st.columns(2)
 with c_veh:
-    # Casella en blanc per escriure l'indicatiu en el moment de la revisió
     indicatiu_vehicle = st.text_input("Indicatiu del Vehicle", placeholder="Ej: Alfa 1, Bravo 2...")
 with c_mat:
     detalls_vehicle = st.text_input("Matrícula / Codi intern", placeholder="Ej: 1234-BBB")
 
 c_aud, c_cond = st.columns(2)
 with c_aud:
-    # Llistat editable de la gent auditora (podeu afegir o treure noms aquí mateix)
     llistat_auditors = [
         "Triar auditor/a...", 
         "Joan García", 
@@ -33,12 +31,7 @@ with c_aud:
     ]
     auditor_seleccionat = st.selectbox("Nom de l'Auditor/a", llistat_auditors)
 with c_cond:
-    # Casella de text lliure per al conductor de la unitat
     conductor_vehicle = st.text_input("Nom del Conductor/a", placeholder="Nom i cognoms del conductor")
-
-# Validació de seguretat abans de mostrar el material
-if not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/...":
-    st.info("⚠️ Per començar, heu d'escriure l'**Indicatiu del Vehicle** i seleccionar el **Nom de l'Auditor/a**.")
 
 # Inicialització de la base de dades amb alertes de caducitat
 if 'inventari' not in st.session_state:
@@ -127,6 +120,10 @@ with col2:
 
 st.write("---")
 
+# Avisar a l'usuari si falta omplir dades obligatòries
+if not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/a...":
+    st.info("⚠️ Per començar, heu d'escriure l'**Indicatiu del Vehicle** i seleccionar el **Nom de l'Auditor/a** a dalt de tot.")
+
 # --- LLISTES INTERACTIVES ---
 for categoria, llista in st.session_state.inventari.items():
     seccio_ok = all(item["ok"] for item in llista)
@@ -134,7 +131,7 @@ for categoria, llista in st.session_state.inventari.items():
     
     with st.expander(titol, expanded=not seccio_ok):
         for i, item in enumerate(llista):
-            col_check, col_date = st.columns()
+            col_check, col_date = st.columns(2)
             
             with col_check:
                 item["ok"] = st.checkbox(item["nom"], value=item["ok"], key=f"chk_{categoria}_{i}")
@@ -201,3 +198,7 @@ data_arxiu = datetime.date.today().strftime('%Y%m%d')
 col_btn1, col_btn2 = st.columns(2)
 
 with col_btn1:
+    botó_desactivat = (not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/a...")
+    st.download_button(
+        label="💾 Descarregar Informe (TXT)",
+        data=informe_text,
