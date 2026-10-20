@@ -198,7 +198,9 @@ data_arxiu = datetime.date.today().strftime('%Y%m%d')
 col_btn1, col_btn2 = st.columns(2)
 
 with col_btn1:
-    botó_desactivat = (not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/a...")
+    boto_bloquejat = False
+    if not indicatiu_vehicle or auditor_seleccionat == "Triar auditor/a...":
+        boto_bloquejat = True
+        
     st.download_button(
         label="💾 Descarregar Informe (TXT)",
-        data=informe_text,
